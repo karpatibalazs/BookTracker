@@ -26,7 +26,7 @@ public class BookTrackerService : IBookTrackerService
 
     public async Task<IEnumerable<Book>> GetByNameAsync(string name)
     {
-        return await _context.Books.Where(b => b.BookName.Contains(name)).ToListAsync();
+        return await _context.Books.Where(b => EF.Functions.Like(b.BookName, $"%{name}%")).ToListAsync();
     }
     public async Task<Book> AddBookAsync(CreateBookDTO dto)
     {
