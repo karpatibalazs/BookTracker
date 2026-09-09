@@ -1,6 +1,41 @@
 @BookTrackerAPI_HostAddress = http://localhost:5146
 
-GET {{BookTrackerAPI_HostAddress}}/weatherforecast/
+GET {{BookTrackerAPI_HostAddress}}/api/books
 Accept: application/json
+
+###
+
+GET {{BookTrackerAPI_HostAddress}}/api/books?name=Hobbit
+Accept: application/json
+
+###
+
+GET {{BookTrackerAPI_HostAddress}}/api/books/1
+Accept: application/json
+
+###
+
+POST {{BookTrackerAPI_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "bookName": "The Hobbit",
+  "bookAuthor": "J.R.R. Tolkien",
+  "status": "PlanToRead"
+}
+
+###
+
+PUT {{BookTrackerAPI_HostAddress}}/api/books/1
+Content-Type: application/json
+
+{
+  "bookRating": 5,
+  "status": "Completed"
+}
+
+###
+
+DELETE {{BookTrackerAPI_HostAddress}}/api/books/1
 
 ###
