@@ -21,7 +21,7 @@ REST API for tracking books built with ASP.NET Core and Entity Framework Core.
 ## Run locally
 
 ```bash
-git clone https://github.com/yourusername/BookTrackerAPI.git
+git clone https://github.com/karpatibalazs/BookTrackerAPI.git
 cd BookTrackerAPI
 dotnet ef database update
 dotnet run
