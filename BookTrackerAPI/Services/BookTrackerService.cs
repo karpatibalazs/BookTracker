@@ -24,9 +24,9 @@ public class BookTrackerService : IBookTrackerService
         return await _context.Books.FindAsync(id);
     }
 
-    public async Task<Book?> GetByNameAsync(string name)
+    public async Task<IEnumerable<Book>> GetByNameAsync(string name)
     {
-        return await _context.Books.FirstOrDefaultAsync(b => b.BookName == name);
+        return await _context.Books.Where(b => b.BookName.Contains(name)).ToListAsync();
     }
     public async Task<Book> AddBookAsync(CreateBookDTO dto)
     {

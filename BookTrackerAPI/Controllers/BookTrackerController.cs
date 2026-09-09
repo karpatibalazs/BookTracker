@@ -5,7 +5,7 @@ using BookTrackerAPI.DTOs;
 
 namespace BookTrackerAPI.Controllers;
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/books")]
 public class BookTrackerController : ControllerBase
 {
     private readonly IBookTrackerService _bookTrackerService;
@@ -24,13 +24,13 @@ public class BookTrackerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAll([FromQuery] string? name)
+    public async Task<ActionResult<IEnumerable<Book>>> GetAll([FromQuery] string? name)
     {
         if (name is not null)
         {
-            var book = await _bookTrackerService.GetByNameAsync(name);
-            if (book is null) return NotFound();
-            return Ok(book);
+            var books = await _bookTrackerService.GetByNameAsync(name);
+            if (!books.Any()) return NotFound();
+            return Ok(books);
         }
         return Ok(await _bookTrackerService.GetAllAsync());
     }
