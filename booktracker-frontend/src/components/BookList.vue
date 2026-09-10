@@ -7,7 +7,7 @@ const error = ref(null)
 
 async function fetchBooks() {
   try {
-    const response = await fetch('http://localhost:5146/api/books')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books`)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     books.value = await response.json()
   } catch (err) {
@@ -17,7 +17,7 @@ async function fetchBooks() {
 
 async function deleteBook(id) {
   try {
-    const response = await fetch(`http://localhost:5146/api/books/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/${id}`, {
       method: 'DELETE'
     })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
