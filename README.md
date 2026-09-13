@@ -11,4 +11,5 @@ Full-stack alkalmazás könyvek nyilvántartására: egy ASP.NET Core REST API �
 
 **Frontend**
 - Vue.js 3 (Composition API)
+- Typescript
 - Vite
