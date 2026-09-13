@@ -1,12 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import type { ReadingStatus } from '../types'
 
 const bookName = ref('')
 const bookAuthor = ref('')
-const status = ref('PlanToRead')
-const error = ref(null)
+const status = ref<ReadingStatus>('PlanToRead')
+const error = ref<string | null>(null)
 
-const emit = defineEmits(['book-added'])
+const emit = defineEmits<{
+  'book-added': []
+}>()
 
 async function submitForm() {
   error.value = null
@@ -28,7 +31,7 @@ async function submitForm() {
 
     emit('book-added')
   } catch (err) {
-    error.value = err.message
+    error.value = err instanceof Error ? err.message : String(err)
   }
 }
 </script>
@@ -41,7 +44,7 @@ async function submitForm() {
     <input v-model="bookName" placeholder="Cím" required />
     <input v-model="bookAuthor" placeholder="Szerző" required />
     <select v-model="status">
-      <option value="PlanToRead">Tervezem olvasni</option>
+      <option value="PlanToRead">Olvasnám</option>
       <option value="CurrentlyReading">Éppen olvasom</option>
       <option value="Completed">Elolvastam</option>
     </select>

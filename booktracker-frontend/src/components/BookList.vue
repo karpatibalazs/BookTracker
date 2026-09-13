@@ -1,9 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import AddBookForm from './AddBookForm.vue'
+import type { Book, ReadingStatus } from '../types'
 
-const books = ref([])
-const error = ref(null)
+const books = ref<Book[]>([])
+const error = ref<string | null>(null)
 
 async function fetchBooks() {
   try {
@@ -11,11 +12,11 @@ async function fetchBooks() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     books.value = await response.json()
   } catch (err) {
-    error.value = err.message
+    error.value = err instanceof Error ? err.message : String(err)
   }
 }
 
-async function deleteBook(id) {
+async function deleteBook(id: number) {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/${id}`, {
       method: 'DELETE'
@@ -23,18 +24,32 @@ async function deleteBook(id) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     await fetchBooks()
   } catch (err) {
-    error.value = err.message
+    error.value = err instanceof Error ? err.message : String(err)
   }
 }
 
-function statusLabel(status) {
-  const labels = { PlanToRead: 'Olvasnám', CurrentlyReading: 'Éppen olvasom', Completed: 'Elolvastam' }
-  return labels[status] ?? status
+async function updateStatus(id : number, newStatus : ReadingStatus) {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/${id}`, {
+      method :'PUT',
+      headers: { 'Content-Type' : 'application/json' },
+      body : JSON.stringify({ status : newStatus })
+    })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    await fetchBooks()
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : String(err)
+  }
 }
 
-function statusClass(status) {
-  const classes = { PlanToRead: 'status-plan', CurrentlyReading: 'status-reading', Completed: 'status-done' }
-  return classes[status] ?? ''
+
+function statusClass(status: ReadingStatus): string {
+  const classes: Record<ReadingStatus, string> = {
+    PlanToRead: 'status-plan',
+    CurrentlyReading: 'status-reading',
+    Completed: 'status-done'
+  }
+  return classes[status]
 }
 
 onMounted(fetchBooks)
@@ -57,7 +72,16 @@ onMounted(fetchBooks)
           <span class="book-name">{{ book.bookName }}</span>
           <span class="book-author">{{ book.bookAuthor }}</span>
         </div>
-        <span class="status-pill" :class="statusClass(book.status)">{{ statusLabel(book.status) }}</span>
+        <select
+          class="status-pill"
+          :class="statusClass(book.status)"
+          :value="book.status"
+          @change="updateStatus(book.bookId, ($event.target as HTMLSelectElement).value as ReadingStatus)"
+        >
+          <option value="PlanToRead">Tervezem olvasni</option>
+          <option value="CurrentlyReading">Éppen olvasom</option>
+          <option value="Completed">Elolvastam</option>
+        </select>
         <button class="delete-btn" @click="deleteBook(book.bookId)">Törlés</button>
       </li>
     </ul>
@@ -90,12 +114,19 @@ onMounted(fetchBooks)
 .book-author { color: var(--color-text-muted); font-size: 0.9rem; }
 
 .status-pill {
+  font-family: var(--font-body);
   font-size: 0.8rem;
-  padding: 0.2rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
   border: 1px solid var(--color-border);
+  background: var(--color-surface);
   color: var(--color-text-muted);
   white-space: nowrap;
+  cursor: pointer;
+}
+.status-pill:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
 }
 .status-reading { border-color: var(--color-accent); color: var(--color-accent); }
 .status-done { border-color: var(--color-done); color: var(--color-done); }
