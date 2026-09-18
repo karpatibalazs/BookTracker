@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import AddBookForm from './AddBookForm.vue'
 import type { Book, ReadingStatus } from '../types'
 
 const books = ref<Book[]>([])
 const error = ref<string | null>(null)
+const searchQuery = ref<string>("")
+const filteredBooks = computed(() => books.value.filter(book => book.bookName.toLowerCase().includes(searchQuery.value.toLowerCase())))
 
 async function fetchBooks() {
   try {
@@ -63,11 +65,11 @@ onMounted(fetchBooks)
     </header>
 
     <AddBookForm @book-added="fetchBooks" />
-
+    <input v-model="searchQuery" type="text" class="search-input" placeholder="Keresés cím szerint">
     <p v-if="error" class="error">Hiba történt: {{ error }}</p>
-
+    
     <ul v-else class="book-list">
-      <li v-for="book in books" :key="book.bookId" class="book-row">
+      <li v-for="book in filteredBooks" :key="book.bookId" class="book-row">
         <div class="book-info">
           <span class="book-name">{{ book.bookName }}</span>
           <span class="book-author">{{ book.bookAuthor }}</span>
@@ -96,6 +98,29 @@ onMounted(fetchBooks)
   margin: 0 0 0.25rem;
 }
 .subtitle { color: var(--color-text-muted); margin: 0; }
+
+.search-input {
+  width: 100%;
+  max-width: 320px;
+  margin: 1.5rem 0 0.5rem;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 0.15s ease;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
 
 .error { color: #E08585; }
 
